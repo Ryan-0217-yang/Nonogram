@@ -38,35 +38,27 @@ new_block_mask = [
 
 def sprint_settle(des: LineNumbers, in_string: LineMask, i: int, j: int,
                   settle_string: List[LineMask]) -> bool:
-    """
-    Recursively solve a single line using dynamic programming.
-    
-    Args:
-        des: Line clue numbers
-        in_string: Current state of the line
-        i: Current position in the line
-        j: Current clue number being placed
-        settle_string: List containing the settled result (modified in place)
-    
-    Returns:
-        True if a valid solution exists, False otherwise
-    """
     global dp_table
-    
+
     # Base cases
     if (i == -1 or i == 0) and j == 0:
         return True
-    
+
     if i < 0:
         return False
-    
+
+    # 新增：當 i = 0 但 j != 0 時，表示位置不夠放剩餘的方塊
+    if i == 0:
+        dp_table[i][j] = CONFLICT
+        return False
+
     if dp_table[i][j] == CONFLICT:
         return False
-    
+
     if dp_table[i][j] == SOLVED:
         return True
-    
-    # Get current square state
+
+    # Get current square state (現在 i >= 1，所以 i-1 >= 0)
     now_square = int(shift_r(in_string, i - 1) & SQUARE)
     
     # Check if we can place a block here

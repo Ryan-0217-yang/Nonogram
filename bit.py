@@ -14,34 +14,24 @@ LineMask = int
 MASK50 = 1125899906842623  # 0x3FFFFFFFFFFFF in hex
 
 
+def shift_l(a:  LineMask, s: int) -> LineMask:
+    """
+    Shift left by s positions (each position is 2 bits).
+    Equivalent to C++ SHIFT_L macro.
+    """
+    if s < 0:
+        return 0  # 負數位移在這個上下文中應該返回 0
+    return (a << (s * 2)) & ((1 << (P_SIZE * 2)) - 1)
+
+
 def shift_r(a: LineMask, s: int) -> LineMask:
     """
     Shift right by s positions (each position is 2 bits).
     Equivalent to C++ SHIFT_R macro.
-    
-    Args:
-        a: The bit mask to shift
-        s: Number of positions to shift (each position = 2 bits)
-    
-    Returns:
-        Shifted bit mask
     """
+    if s < 0:
+        return 0  # 負數位移在這個上下文中應該返回 0
     return (a >> (s * 2)) & ((1 << (P_SIZE * 2)) - 1)
-
-
-def shift_l(a: LineMask, s: int) -> LineMask:
-    """
-    Shift left by s positions (each position is 2 bits).
-    Equivalent to C++ SHIFT_L macro.
-    
-    Args:
-        a: The bit mask to shift
-        s: Number of positions to shift (each position = 2 bits)
-    
-    Returns:
-        Shifted bit mask
-    """
-    return (a << (s * 2)) & ((1 << (P_SIZE * 2)) - 1)
 
 
 def count64(block: LineMask) -> int:
