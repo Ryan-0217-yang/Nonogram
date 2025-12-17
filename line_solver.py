@@ -123,8 +123,14 @@ def line_solver(prob: Puzzle, sol: Board) -> int:
         # Track this line in dependency table
         db_table.this_temp_table |= (1 << i)
         
+        # Get the appropriate string (column or row)
+        if i < P_SIZE:
+            current_string = sol.col_string[i]
+        else:
+            current_string = sol.row_string[i - P_SIZE]
+        
         # Try to find cached result
-        found, settle = find_hash(prob.m_lines[i], sol.col_string[i])
+        found, settle = find_hash(prob.m_lines[i], current_string)
         
         if not found:
             # Reset DP table
@@ -134,7 +140,7 @@ def line_solver(prob: Puzzle, sol: Board) -> int:
             
             # Solve this line
             settle_list = [0]
-            success = sprint_settle(prob.m_lines[i], sol.col_string[i],
+            success = sprint_settle(prob.m_lines[i], current_string,
                                    P_SIZE, prob.m_lines[i].m_count, settle_list)
             settle = settle_list[0]
             
@@ -143,10 +149,14 @@ def line_solver(prob: Puzzle, sol: Board) -> int:
                 return CONFLICT
             
             # Cache the result
-            insert_hash(prob.m_lines[i], sol.col_string[i], settle)
+            insert_hash(prob.m_lines[i], current_string, settle)
         
         # Apply changes
-        change = sol.col_string[i] ^ settle
+        if i < P_SIZE:
+            change = sol.col_string[i] ^ settle
+        else:
+            change = sol.row_string[i - P_SIZE] ^ settle
+        
         j = 0
         
         while change != 0 and j < P_SIZE:

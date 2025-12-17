@@ -57,6 +57,7 @@ class Board:
     def __init__(self):
         self.num_of_square_on_board: int = 0
         # Each element stores the state of P_SIZE cells (2 bits per cell)
+        # Initialize with zeros but will be set to all 1s in init_board
         self.col_string: List[LineMask] = [0] * P_SIZE
         self.row_string: List[LineMask] = [0] * P_SIZE
 
