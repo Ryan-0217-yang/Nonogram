@@ -66,6 +66,8 @@ def sprint_settle(des: LineNumbers, in_string: LineMask, i: int, j: int,
     # Try placing a block (only if j > 0, i.e., there are blocks remaining)
     if j > 0:
         # Check if we can place a block here
+        # Note: j ranges from 1 to m_count, and m_numbers is sized to P_SIZE+2,
+        # so m_numbers[j] is always valid
         position_of_block = i - des.m_numbers[j]
         if position_of_block < 0:
             dp_table[i][j] = CONFLICT
@@ -73,6 +75,8 @@ def sprint_settle(des: LineNumbers, in_string: LineMask, i: int, j: int,
         
         # Create mask for this block
         this_block_mask = shift_l(block_mask[des.m_numbers[j]], position_of_block)
+        # Add a space before the block (to separate from previous block)
+        # Note: shift_l handles negative positions correctly (returns 0)
         this_block_mask |= shift_l(SQUARE_SPACE, position_of_block - 1)
         
         # Check if block placement is valid
