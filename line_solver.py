@@ -61,28 +61,30 @@ def sprint_settle(des: LineNumbers, in_string: LineMask, i: int, j: int,
     # Get current square state (現在 i >= 1，所以 i-1 >= 0)
     now_square = int(shift_r(in_string, i - 1) & SQUARE)
     
-    # Check if we can place a block here
-    position_of_block = i - des.m_numbers[j]
-    if position_of_block < 0:
-        dp_table[i][j] = CONFLICT
-        return False
-    
-    # Create mask for this block
-    this_block_mask = shift_l(block_mask[des.m_numbers[j]], position_of_block)
-    this_block_mask |= shift_l(SQUARE_SPACE, position_of_block - 1)
-    
     is_valid = False
-    should_try_block = True
     
-    # Check if block placement is valid
-    if this_block_mask & (~in_string):
-        should_try_block = False
-    
-    # Try placing a block
-    if now_square != SQUARE_SPACE and should_try_block and j > 0:
-        if sprint_settle(des, in_string, position_of_block - 1, j - 1, settle_string):
-            settle_string[0] |= this_block_mask
-            is_valid = True
+    # Try placing a block (only if j > 0, i.e., there are blocks remaining)
+    if j > 0:
+        # Check if we can place a block here
+        position_of_block = i - des.m_numbers[j]
+        if position_of_block < 0:
+            dp_table[i][j] = CONFLICT
+            return False
+        
+        # Create mask for this block
+        this_block_mask = shift_l(block_mask[des.m_numbers[j]], position_of_block)
+        this_block_mask |= shift_l(SQUARE_SPACE, position_of_block - 1)
+        
+        # Check if block placement is valid
+        should_try_block = True
+        if this_block_mask & (~in_string):
+            should_try_block = False
+        
+        # Try placing the block
+        if now_square != SQUARE_SPACE and should_try_block:
+            if sprint_settle(des, in_string, position_of_block - 1, j - 1, settle_string):
+                settle_string[0] |= this_block_mask
+                is_valid = True
     
     # Try placing a space
     if now_square != SQUARE_BLOCK and i > des.m_sum[j]:
